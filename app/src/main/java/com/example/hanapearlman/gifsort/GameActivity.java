@@ -1,8 +1,8 @@
 package com.example.hanapearlman.gifsort;
 
+import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -10,6 +10,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +24,7 @@ public class GameActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
     private HashMap<String, TreeSet<String>> categories = new HashMap<>();
+    ImageView ivGif;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,13 @@ public class GameActivity extends AppCompatActivity {
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
         cvGif = (CardView) findViewById(R.id.cvGif);
+        ivGif = (ImageView) findViewById(R.id.ivGif);
+
+        Glide.with(this)
+                .load("https://media.giphy.com/media/RTvv8ST7rYUec/giphy.gif")
+                .asGif()
+                .into(ivGif);
+
         cvGif.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -113,7 +124,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeRight() {
         //TODO: accelerate card right
         Animation animation = new TranslateAnimation(0, 900, 0, 0);
-        animation.setDuration(400);
+        animation.setDuration(200);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -123,7 +134,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         //TODO: accelerate card left
         Animation animation = new TranslateAnimation(0, -900, 0, 0);
-        animation.setDuration(400);
+        animation.setDuration(200);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -133,7 +144,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeTop() {
         //TODO: accelerate card top
         Animation animation = new TranslateAnimation(0, 0, 0, -1500);
-        animation.setDuration(700);
+        animation.setDuration(350);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -143,10 +154,11 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeBottom() {
         //TODO: accelerate card bottom
         Animation animation = new TranslateAnimation(0, 0, 0, 1500);
-        animation.setDuration(700);
+        animation.setDuration(350);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeDown: ");
     }
+
 }
