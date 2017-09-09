@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 public class GameActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
+    private static final String DEBUG_TAG = "Gestures";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +26,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "Gestures";
+
 
         @Override
         public boolean onDown(MotionEvent event) {
@@ -65,17 +66,21 @@ public class GameActivity extends AppCompatActivity {
 
     public void onSwipeRight() {
         //TODO: accelerate card right
+        Log.d(DEBUG_TAG, "onSwipeRight: ");
     }
 
     public void onSwipeLeft() {
         //TODO: accelerate card left
+        Log.d(DEBUG_TAG, "onSwipeLeft: ");
     }
 
     public void onSwipeTop() {
         //TODO: accelerate card top
+        Log.d(DEBUG_TAG, "onSwipeTop: ");
     }
 
     public void onSwipeBottom() {
         //TODO: accelerate card bottom
+        Log.d(DEBUG_TAG, "onSwipeDown: ");
     }
 }
