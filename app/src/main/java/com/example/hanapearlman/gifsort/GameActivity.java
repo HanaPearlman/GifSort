@@ -3,30 +3,37 @@ package com.example.hanapearlman.gifsort;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 
 public class GameActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
+    CardView cvGif;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
-    }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        this.mDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
+        cvGif = (CardView) findViewById(R.id.cvGif);
+        cvGif.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                mDetector.onTouchEvent(motionEvent);
+                return true;
+            }
+        });
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-
 
         @Override
         public boolean onDown(MotionEvent event) {
@@ -66,21 +73,41 @@ public class GameActivity extends AppCompatActivity {
 
     public void onSwipeRight() {
         //TODO: accelerate card right
+        Animation animation = new TranslateAnimation(0, 900, 0, 0);
+        animation.setDuration(400);
+        animation.setFillAfter(false);
+        //llTransportOptions.startAnimation(animation);
+        cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeRight: ");
     }
 
     public void onSwipeLeft() {
         //TODO: accelerate card left
+        Animation animation = new TranslateAnimation(0, -900, 0, 0);
+        animation.setDuration(400);
+        animation.setFillAfter(false);
+        //llTransportOptions.startAnimation(animation);
+        cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeLeft: ");
     }
 
     public void onSwipeTop() {
         //TODO: accelerate card top
+        Animation animation = new TranslateAnimation(0, 0, 0, -1500);
+        animation.setDuration(700);
+        animation.setFillAfter(false);
+        //llTransportOptions.startAnimation(animation);
+        cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeTop: ");
     }
 
     public void onSwipeBottom() {
         //TODO: accelerate card bottom
+        Animation animation = new TranslateAnimation(0, 0, 0, 1500);
+        animation.setDuration(700);
+        animation.setFillAfter(false);
+        //llTransportOptions.startAnimation(animation);
+        cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeDown: ");
     }
 }
