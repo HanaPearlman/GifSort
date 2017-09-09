@@ -1,6 +1,8 @@
 package com.example.hanapearlman.gifsort;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -16,6 +18,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.TreeSet;
 
 import com.google.gson.Gson;
@@ -42,7 +46,8 @@ public class GameActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
     GiphyClient client;
-    private HashMap<String, TreeSet<String>> categories = new HashMap<String, TreeSet<String>>();
+    private HashMap<String, String[]> categories = new HashMap<String, String[]>();
+    private HashSet<Gif> gifSet = new HashSet<Gif>();
     ImageView ivGif;
 
     @Override
@@ -53,7 +58,7 @@ public class GameActivity extends AppCompatActivity {
         client = new GiphyClient();
 
         //TODO: change this later
-        populateGifList("cat", "dog", "pig", "bunny");
+        populateGifList("Animals");
 
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
@@ -75,35 +80,35 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void fillCategories() {
-        categories.put("Animals", new TreeSet<String>(Arrays.asList("cats", "dogs", "walrus",
-                        "birds", "fish", "panda", "bunnies", "penguin", "horse", "pig",
-                        "owl", "duck", "butterfly", "fox", "sloth", "giraffe")));
-        categories.put("Motion", new TreeSet<String>(Arrays.asList("bounce", "jump", "run",
-                        "sleep", "dance", "swim", "drink")));
-        categories.put("Entertainment", new TreeSet<String>(Arrays.asList("disney", "glee",
-                        "simpsons", "sponge bob", "hamilton", "anime")));
-        categories.put("Emotions", new TreeSet<String>(Arrays.asList("cry", "smile", "happy",
-                        "sad", "angry", "no", "yas", "heart")));
-        categories.put("Nature", new TreeSet<String>(Arrays.asList("rain", "snow", "sun", "wind", "water",
-                        "tornado", "fire", "flower", "sea", "space", "globe")));
-        categories.put("Cute", new TreeSet<String>(Arrays.asList("babies", "dogs", "cats",
-                        "bunnies", "boop", "love")));
-        categories.put("Misc", new TreeSet<String>(Arrays.asList("hand", "kids", "math", "school",
-                        "money", "clock", "beach", "workout", "ballet", "memes", "fireworks")));
-        categories.put("Food", new TreeSet<String>(Arrays.asList("fries", "burgers", "ice cream",
-                        "cake", "pizza", "cookie", "chocolate", "candy")));
-        categories.put("Sports", new TreeSet<String>(Arrays.asList("soccer", "basketball",
-                        "football", "frisbee", "golf", "baseball")));
-        categories.put("People", new TreeSet<String>(Arrays.asList("obama", "trump", "hillary",
+        categories.put("Animals", new String[]{"cats", "dogs", "walrus",
+                "birds", "fish", "panda", "bunnies", "penguin", "horse", "pig",
+                "owl", "duck", "butterfly", "fox", "sloth", "giraffe"});
+        categories.put("Motion", new String[]{"bounce", "jump", "run",
+                        "sleep", "dance", "swim", "drink"});
+        categories.put("Entertainment", new String[]{"disney", "glee",
+                        "simpsons", "sponge bob", "hamilton", "anime"});
+        categories.put("Emotions", new String[]{"cry", "smile", "happy",
+                        "sad", "angry", "no", "yas", "heart"});
+        categories.put("Nature", new String[]{"rain", "snow", "sun", "wind", "water",
+                        "tornado", "fire", "flower", "sea", "space", "globe"});
+        categories.put("Cute", new String[]{"babies", "dogs", "cats",
+                        "bunnies", "boop", "love"});
+        categories.put("Misc", new String[]{"hand", "kids", "math", "school",
+                        "money", "clock", "beach", "workout", "ballet", "memes", "fireworks"});
+        categories.put("Food", new String[]{"fries", "burgers", "ice cream",
+                        "cake", "pizza", "cookie", "chocolate", "candy"});
+        categories.put("Sports", new String[]{"soccer", "basketball",
+                        "football", "frisbee", "golf", "baseball"});
+        categories.put("People", new String[]{"obama", "trump", "hillary",
                         "beyonce", "bieber", "nicki", "lorde", "tswift", "kkw", "vader", "bart",
                          "homer", "patrick", "sponge bob", "jlaw", "gaga", "rihanna", "zayn",
-                         "bernie")));
-        categories.put("KPop", new TreeSet<String>(Arrays.asList("bts", "snsd", "blackpink",
-                        "twice", "bigbang", "got7", "iu")));
-        categories.put("Colors", new TreeSet<String>(Arrays.asList("red", "blue", "green",
-                        "yellow", "orange")));
-        categories.put("Trippy", new TreeSet<String>(Arrays.asList("fractal", "psychedelic",
-                        "spiral", "recursion")));
+                         "bernie"});
+        categories.put("KPop", new String[]{"bts", "snsd", "blackpink",
+                        "twice", "bigbang", "got7", "iu"});
+        categories.put("Colors", new String[]{"red", "blue", "green",
+                        "yellow", "orange"});
+        categories.put("Trippy", new String[]{"fractal", "psychedelic",
+                        "spiral", "recursion"});
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -184,11 +189,18 @@ public class GameActivity extends AppCompatActivity {
         Log.d(DEBUG_TAG, "onSwipeDown: ");
     }
 
-    public void populateGifList(final String cat1, String cat2, String cat3, String cat4) {
-        getGiphysFromCategory(cat1);
-        getGiphysFromCategory(cat2);
-        getGiphysFromCategory(cat3);
-        getGiphysFromCategory(cat4);
+    public void populateGifList(final String category) {
+        TreeSet<Integer> intSet = new TreeSet<Integer>();
+        int categorySize = categories.get(category).length;
+        for (int i = 0; i < 4; i++) {
+            int random = (int) (Math.random() * categorySize);
+            if (!intSet.contains(random)) {
+                getGiphysFromCategory(categories.get(category)[random]);
+                intSet.add(random);
+            } else {
+                i--;
+            }
+        }
     }
 
     public void getGiphysFromCategory(final String category) {
@@ -200,7 +212,8 @@ public class GameActivity extends AppCompatActivity {
                             //parse the JSON
                             try {
                                 JSONObject data = response.getJSONObject("data");
-                                Gif newGif = new Gif(data.getString("image_original_url"), new TreeSet<String>(Arrays.asList(category)));
+                                gifSet.add(new Gif(data.getString("image_original_url"),
+                                        new TreeSet<String>(Arrays.asList(category))));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
