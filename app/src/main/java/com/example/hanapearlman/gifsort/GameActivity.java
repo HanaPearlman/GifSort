@@ -1,5 +1,6 @@
 package com.example.hanapearlman.gifsort;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -51,13 +52,20 @@ public class GameActivity extends AppCompatActivity {
     GiphyClient client;
     private HashMap<String, String[]> categories = new HashMap<String, String[]>();
     List<String> fourCats;
-    private HashSet<Gif> gifSet = new HashSet<Gif>();
+    private ArrayList<Gif> gifSet = new ArrayList<>();
     ImageView ivGif;
+    TextView tvCat1;
+    TextView tvCat2;
+    TextView tvCat3;
+    TextView tvCat4;
+    int score;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        context = this;
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         client = new GiphyClient();
         fourCats = new ArrayList<>();
@@ -67,11 +75,12 @@ public class GameActivity extends AppCompatActivity {
 
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
+        score = 0;
 
-        Glide.with(this)
-                .load("https://media.giphy.com/media/RTvv8ST7rYUec/giphy.gif")
-                .asGif()
-                .into(ivGif);
+//        Glide.with(this)
+//                .load("https://media.giphy.com/media/RTvv8ST7rYUec/giphy.gif")
+//                .asGif()
+//                .into(ivGif);
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -159,7 +168,11 @@ public class GameActivity extends AppCompatActivity {
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
+        if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
+            score++;
+        }
         Log.d(DEBUG_TAG, "onSwipeRight: ");
+        showNextGif();
     }
 
     public void onSwipeLeft() {
@@ -169,7 +182,11 @@ public class GameActivity extends AppCompatActivity {
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
+        if (gifSet.get(0).tags.get(0).equals(tvCat3.getText())) {
+            score++;
+        }
         Log.d(DEBUG_TAG, "onSwipeLeft: ");
+        showNextGif();
     }
 
     public void onSwipeTop() {
@@ -180,6 +197,10 @@ public class GameActivity extends AppCompatActivity {
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeTop: ");
+        if (gifSet.get(0).tags.get(0).equals(tvCat1.getText())) {
+            score++;
+        }
+        showNextGif();
     }
 
     public void onSwipeBottom() {
@@ -189,7 +210,11 @@ public class GameActivity extends AppCompatActivity {
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
+        if (gifSet.get(0).tags.get(0).equals(tvCat4.getText())) {
+            score++;
+        }
         Log.d(DEBUG_TAG, "onSwipeDown: ");
+        showNextGif();
     }
 
     public void populateGifList(final String category) {
@@ -218,7 +243,16 @@ public class GameActivity extends AppCompatActivity {
                             try {
                                 JSONObject data = response.getJSONObject("data");
                                 gifSet.add(new Gif(data.getString("image_original_url"),
-                                        new TreeSet<String>(Arrays.asList(category))));
+                                        Arrays.asList(category), data.getInt("image_width"),
+                                        data.getInt("image_height")));
+                                if (gifSet.size() == 1) {
+                                    Glide.with(context)
+                                            .load(gifSet.get(0).getUrl())
+                                            .asGif()
+                                            .override(gifSet.get(0).width, gifSet.get(0).height)
+                                            .into(ivGif);
+                                    Log.i("NEWGIF", gifSet.get(0).getUrl());
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -235,13 +269,23 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void populateCategoryNames() {
-        TextView tvCat1 = (TextView) findViewById(R.id.tvCat1);
+        tvCat1 = (TextView) findViewById(R.id.tvCat1);
         tvCat1.setText(fourCats.get(0));
-        TextView tvCat2 = (TextView) findViewById(R.id.tvCat2);
+        tvCat2 = (TextView) findViewById(R.id.tvCat2);
         tvCat2.setText(fourCats.get(1));
-        TextView tvCat3 = (TextView) findViewById(R.id.tvCat3);
+        tvCat3 = (TextView) findViewById(R.id.tvCat3);
         tvCat3.setText(fourCats.get(2));
-        TextView tvCat4 = (TextView) findViewById(R.id.tvCat4);
+        tvCat4 = (TextView) findViewById(R.id.tvCat4);
         tvCat4.setText(fourCats.get(3));
+    }
+
+    public void showNextGif() {
+        gifSet.remove(0);
+        Glide.with(this)
+                .load(gifSet.get(0).getUrl())
+                .asGif()
+                .override(gifSet.get(0).width, gifSet.get(0).height)
+                .into(ivGif);
+        Log.i("NEWGIF", gifSet.get(0).getUrl());
     }
 }
