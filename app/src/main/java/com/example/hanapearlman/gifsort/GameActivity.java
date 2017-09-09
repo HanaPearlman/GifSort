@@ -23,7 +23,7 @@ public class GameActivity extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
-    private HashMap<String, TreeSet<String>> categories = new HashMap<>();
+    private HashMap<String, TreeSet<String>> categories = new HashMap<String, TreeSet<String>>();
     ImageView ivGif;
 
     @Override
