@@ -10,12 +10,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 public class GameActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
+    ImageView ivGif;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,13 @@ public class GameActivity extends AppCompatActivity {
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
         cvGif = (CardView) findViewById(R.id.cvGif);
+        ivGif = (ImageView) findViewById(R.id.ivGif);
+
+        Glide.with(this)
+                .load("https://media.giphy.com/media/RTvv8ST7rYUec/giphy.gif")
+                .asGif()
+                .into(ivGif);
+
         cvGif.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -110,4 +121,5 @@ public class GameActivity extends AppCompatActivity {
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeDown: ");
     }
+
 }
