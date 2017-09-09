@@ -11,11 +11,16 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.TreeSet;
+
 public class GameActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
+    private HashMap<String, TreeSet<String>> categories = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,40 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        fillCategories();
+    }
+
+    private void fillCategories() {
+        categories.put("Animals", new TreeSet<String>(Arrays.asList("cats", "dogs", "walrus",
+                        "birds", "fish", "panda", "bunnies", "penguin", "horse", "pig",
+                        "owl", "duck", "butterfly", "fox", "sloth", "giraffe")));
+        categories.put("Motion", new TreeSet<String>(Arrays.asList("bounce", "jump", "run",
+                        "sleep", "dance", "swim", "drink")));
+        categories.put("Entertainment", new TreeSet<String>(Arrays.asList("disney", "glee",
+                        "simpsons", "sponge bob", "hamilton", "anime")));
+        categories.put("Emotions", new TreeSet<String>(Arrays.asList("cry", "smile", "happy",
+                        "sad", "angry", "no", "yas", "heart")));
+        categories.put("Nature", new TreeSet<String>(Arrays.asList("rain", "snow", "sun", "wind", "water",
+                        "tornado", "fire", "flower", "sea", "space", "globe")));
+        categories.put("Cute", new TreeSet<String>(Arrays.asList("babies", "dogs", "cats",
+                        "bunnies", "boop", "love")));
+        categories.put("Misc", new TreeSet<String>(Arrays.asList("hand", "kids", "math", "school",
+                        "money", "clock", "beach", "workout", "ballet", "memes", "fireworks")));
+        categories.put("Food", new TreeSet<String>(Arrays.asList("fries", "burgers", "ice cream",
+                        "cake", "pizza", "cookie", "chocolate", "candy")));
+        categories.put("Sports", new TreeSet<String>(Arrays.asList("soccer", "basketball",
+                        "football", "frisbee", "golf", "baseball")));
+        categories.put("People", new TreeSet<String>(Arrays.asList("obama", "trump", "hillary",
+                        "beyonce", "bieber", "nicki", "lorde", "tswift", "kkw", "vader", "bart",
+                         "homer", "patrick", "sponge bob", "jlaw", "gaga", "rihanna", "zayn",
+                         "bernie")));
+        categories.put("KPop", new TreeSet<String>(Arrays.asList("bts", "snsd", "blackpink",
+                        "twice", "bigbang", "got7", "iu")));
+        categories.put("Colors", new TreeSet<String>(Arrays.asList("red", "blue", "green",
+                        "yellow", "orange")));
+        categories.put("Trippy", new TreeSet<String>(Arrays.asList("fractal", "psychedelic",
+                        "spiral", "recursion")));
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
