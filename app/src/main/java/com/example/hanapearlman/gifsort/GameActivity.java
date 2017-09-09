@@ -13,12 +13,15 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -47,6 +50,7 @@ public class GameActivity extends AppCompatActivity {
     CardView cvGif;
     GiphyClient client;
     private HashMap<String, String[]> categories = new HashMap<String, String[]>();
+    List<String> fourCats;
     private HashSet<Gif> gifSet = new HashSet<Gif>();
     ImageView ivGif;
 
@@ -56,8 +60,9 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         client = new GiphyClient();
-
+        fourCats = new ArrayList<>();
         //TODO: change this later
+        fillCategories();
         populateGifList("Animals");
 
         cvGif = (CardView) findViewById(R.id.cvGif);
@@ -75,8 +80,6 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        fillCategories();
     }
 
     private void fillCategories() {
@@ -196,11 +199,13 @@ public class GameActivity extends AppCompatActivity {
             int random = (int) (Math.random() * categorySize);
             if (!intSet.contains(random)) {
                 getGiphysFromCategory(categories.get(category)[random]);
+                fourCats.add(categories.get(category)[random]);
                 intSet.add(random);
             } else {
                 i--;
             }
         }
+        populateCategoryNames();
     }
 
     public void getGiphysFromCategory(final String category) {
@@ -227,5 +232,16 @@ public class GameActivity extends AppCompatActivity {
                     }
             );
         }
+    }
+
+    public void populateCategoryNames() {
+        TextView tvCat1 = (TextView) findViewById(R.id.tvCat1);
+        tvCat1.setText(fourCats.get(0));
+        TextView tvCat2 = (TextView) findViewById(R.id.tvCat2);
+        tvCat2.setText(fourCats.get(1));
+        TextView tvCat3 = (TextView) findViewById(R.id.tvCat3);
+        tvCat3.setText(fourCats.get(2));
+        TextView tvCat4 = (TextView) findViewById(R.id.tvCat4);
+        tvCat4.setText(fourCats.get(3));
     }
 }
