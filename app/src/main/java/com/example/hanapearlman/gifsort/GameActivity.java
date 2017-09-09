@@ -64,14 +64,18 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void onSwipeRight() {
+        //TODO: accelerate card right
     }
 
     public void onSwipeLeft() {
+        //TODO: accelerate card left
     }
 
     public void onSwipeTop() {
+        //TODO: accelerate card top
     }
 
     public void onSwipeBottom() {
+        //TODO: accelerate card bottom
     }
 }
