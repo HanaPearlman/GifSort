@@ -58,6 +58,7 @@ public class GameActivity extends AppCompatActivity {
     TextView tvCat2;
     TextView tvCat3;
     TextView tvCat4;
+    TextView tvScore;
     int score;
     Context context;
 
@@ -89,6 +90,8 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
+        tvScore = (TextView) findViewById(R.id.tvScore);
+        tvScore.setText("Score: " + score);
     }
 
     private void fillCategories() {
@@ -170,9 +173,25 @@ public class GameActivity extends AppCompatActivity {
         cvGif.startAnimation(animation);
         if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
             score++;
+            tvScore.setText("Score: " + score);
         }
         Log.d(DEBUG_TAG, "onSwipeRight: ");
-        showNextGif();
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                //do nothing
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                showNextGif();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                //do nothing
+            }
+        });
     }
 
     public void onSwipeLeft() {
@@ -184,9 +203,25 @@ public class GameActivity extends AppCompatActivity {
         cvGif.startAnimation(animation);
         if (gifSet.get(0).tags.get(0).equals(tvCat3.getText())) {
             score++;
+            tvScore.setText("Score: " + score);
         }
         Log.d(DEBUG_TAG, "onSwipeLeft: ");
-        showNextGif();
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                //do nothing
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                showNextGif();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                //do nothing
+            }
+        });
     }
 
     public void onSwipeTop() {
@@ -199,8 +234,24 @@ public class GameActivity extends AppCompatActivity {
         Log.d(DEBUG_TAG, "onSwipeTop: ");
         if (gifSet.get(0).tags.get(0).equals(tvCat1.getText())) {
             score++;
+            tvScore.setText("Score: " + score);
         }
-        showNextGif();
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                //do nothing
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                showNextGif();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                //do nothing
+            }
+        });
     }
 
     public void onSwipeBottom() {
@@ -212,9 +263,25 @@ public class GameActivity extends AppCompatActivity {
         cvGif.startAnimation(animation);
         if (gifSet.get(0).tags.get(0).equals(tvCat4.getText())) {
             score++;
+            tvScore.setText("Score: " + score);
         }
         Log.d(DEBUG_TAG, "onSwipeDown: ");
-        showNextGif();
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                //do nothing
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                showNextGif();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                //do nothing
+            }
+        });
     }
 
     public void populateGifList(final String category) {
