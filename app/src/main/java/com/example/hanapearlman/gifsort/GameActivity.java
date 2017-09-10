@@ -55,6 +55,8 @@ public class GameActivity extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
+    CardView cvHiddenGif;
+    ImageView ivHiddenGif;
     GiphyClient client;
     private HashMap<String, String[]> categories = new HashMap<String, String[]>();
     List<String> fourCats;
@@ -103,12 +105,17 @@ public class GameActivity extends AppCompatActivity {
         fourCats = new ArrayList<>();
         //TODO: change this later
         fillCategories();
-        populateGifList("Animals");
+
+        int catNumber = (int) (Math.random()*13) + 1;
+        String category = getCategoryFromRandomNumber(catNumber);
+        populateGifList(category);
 
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
         tvHighScore = (TextView) findViewById(R.id.tvHighScore);
         tvHSNumber = (TextView) findViewById(R.id.tvHSNumber);
+        cvHiddenGif = (CardView) findViewById(R.id.cvHiddenLoadingCard);
+        ivHiddenGif = (ImageView) findViewById(R.id.ivHiddenGif);
         score = 0;
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
@@ -239,7 +246,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeRight() {
         //TODO: accelerate card right
         Animation animation = new TranslateAnimation(0, 900, 0, 0);
-        animation.setDuration(200);
+        animation.setDuration(320);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -251,7 +258,7 @@ public class GameActivity extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                //do nothing
+                loadNext();
             }
 
             @Override
@@ -269,7 +276,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         //TODO: accelerate card left
         Animation animation = new TranslateAnimation(0, -900, 0, 0);
-        animation.setDuration(200);
+        animation.setDuration(320);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -281,7 +288,7 @@ public class GameActivity extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                //do nothing
+                loadNext();
             }
 
             @Override
@@ -301,6 +308,7 @@ public class GameActivity extends AppCompatActivity {
         Animation animation = new TranslateAnimation(0, 0, 0, -1500);
         animation.setDuration(350);
         animation.setFillAfter(false);
+        //loadNext();
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeTop: ");
@@ -312,6 +320,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onAnimationStart(Animation animation) {
                 //do nothing
+                loadNext();
             }
 
             @Override
@@ -341,7 +350,7 @@ public class GameActivity extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                //do nothing
+                loadNext();
             }
 
             @Override
@@ -370,21 +379,22 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         populateCategoryNames();
-        Collections.shuffle(gifSet);
     }
 
     public void getGiphysFromCategory(final String category) {
-        for (int i = 0; i < 7; i++) {
-            client.getRandomGiphyWithTag(category, new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            super.onSuccess(statusCode, headers, response);
-                            //parse the JSON
-                            try {
-                                JSONObject data = response.getJSONObject("data");
-                                gifSet.add(new Gif(data.getString("image_original_url"),
-                                        Arrays.asList(category), data.getInt("image_width"),
-                                        data.getInt("image_height")));
+        client.getSearchGiphyWithTag(category, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        //super.onSuccess(statusCode, headers, response);
+                        //parse the JSON
+                        try {
+                            JSONArray data = response.getJSONArray("data");
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject obj = data.getJSONObject(i);
+                                JSONObject imgSpecs = obj.getJSONObject("images").getJSONObject("original");
+                                gifSet.add(new Gif(imgSpecs.getString("url"),
+                                        Arrays.asList(category), imgSpecs.getInt("width"),
+                                        imgSpecs.getInt("height")));
                                 if (gifSet.size() == 1) {
                                     Glide.with(context)
                                             .load(gifSet.get(0).getUrl())
@@ -393,19 +403,28 @@ public class GameActivity extends AppCompatActivity {
                                             .into(ivGif);
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            super.onFailure(statusCode, headers, responseString, throwable);
-                            Log.e("GameActivity", "Failure");
+                                if (gifSet.size() == 20) {
+                                    Collections.shuffle(gifSet);
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
-            );
-        }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e("GameActivity", "Failure");
+            }
+        });
+
     }
 
     public void populateCategoryNames() {
@@ -448,6 +467,36 @@ public class GameActivity extends AppCompatActivity {
                     .override(gifSet.get(0).width, gifSet.get(0).height)
                     .into(ivGif);
             Log.i("NEWGIF", gifSet.get(0).getUrl());
+        }
+    }
+
+    public void loadNext() {
+        if (gifSet.size() > 1) {
+            Glide.with(this)
+                    .load(gifSet.get(1).getUrl())
+                    .asGif()
+                    .override(gifSet.get(1).width, gifSet.get(1).height)
+                    .into(ivHiddenGif);
+        } else {
+            //do nothing, no more cards
+        }
+    }
+
+    public String getCategoryFromRandomNumber(int categoryNumber) {
+        switch (categoryNumber){
+            case 1 : return "Animals";
+            case 2: return "Motion";
+            case 3: return "Entertainment";
+            case 4: return "Emotions";
+            case 5: return "Nature";
+            case 6: return "Cute";
+            case 7: return "Misc";
+            case 8: return "Food";
+            case 9: return "Sport";
+            case 10: return "People";
+            case 11: return "KPop";
+            case 12: return "Colors";
+            default: return "Trippy";
         }
     }
 }

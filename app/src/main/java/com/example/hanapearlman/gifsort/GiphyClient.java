@@ -28,7 +28,16 @@ public class GiphyClient {
         RequestParams params = new RequestParams();
         params.put("api_key", API_KEY);
         params.put("tag", tag);
-        params.put("limit", 8);
+        client.get(url, params, jsonHttpResponseHandler);
+    }
+
+    public void getSearchGiphyWithTag(String query, JsonHttpResponseHandler jsonHttpResponseHandler) {
+        String url = BASE_URL + "search";
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("api_key", API_KEY);
+        params.put("q", query);
+        params.put("limit", 5);
         client.get(url, params, jsonHttpResponseHandler);
     }
 }
