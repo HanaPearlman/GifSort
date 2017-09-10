@@ -422,6 +422,7 @@ public class GameActivity extends AppCompatActivity {
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
                                 }*/
 
+
                                 if (gifSet.size() == 20) {
                                     Collections.shuffle(gifSet);
                                     loadNext();
