@@ -3,12 +3,9 @@ package com.example.hanapearlman.gifsort;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.support.annotation.RequiresApi;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -30,28 +27,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.TreeSet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.TreeSet;
-
 import cz.msebera.android.httpclient.Header;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -72,7 +57,7 @@ public class GameActivity extends AppCompatActivity {
     TextView tvScore;
     TextView tvHighScore;
     TextView tvHSNumber;
-    long score;
+    long numRight;
     Context context;
     Vibrator v;
     SharedPreferences prefs;
@@ -93,6 +78,13 @@ public class GameActivity extends AppCompatActivity {
             seconds = seconds % 60;
 
             timerTextView.setText(String.format("%d:%02d", minutes, seconds));
+            double score = numRight * 17 / (Math.log(seconds/4));
+            if (Double.isNaN(score) || score <= 0) {
+                score = 0;
+            } else if (Double.isInfinite(score)) {
+                score = 999999999.999999999;
+            }
+            tvScore.setText("Score: " + score);
 
             timerHandler.postDelayed(this, 500);
         }
@@ -122,7 +114,7 @@ public class GameActivity extends AppCompatActivity {
         tvHSNumber = (TextView) findViewById(R.id.tvHSNumber);
         cvHiddenGif = (CardView) findViewById(R.id.cvHiddenLoadingCard);
         ivHiddenGif = (ImageView) findViewById(R.id.ivHiddenGif);
-        score = 0;
+        numRight = 0;
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -133,7 +125,6 @@ public class GameActivity extends AppCompatActivity {
         });
         timerTextView = (TextView) findViewById(R.id.tvTime);
         tvScore = (TextView) findViewById(R.id.tvScore);
-        tvScore.setText("Score: " + score);
 
         prefs = this.getSharedPreferences("GifSort", Context.MODE_PRIVATE);
         editor = prefs.edit();
@@ -224,12 +215,12 @@ public class GameActivity extends AppCompatActivity {
             String category = gifSet.get(0).tags.get(0);
             if (category.equals(tvCat2.getText()) || category.equals(tvCat1.getText())
             || category.equals(tvCat3.getText()) || category.equals(tvCat4.getText())) {
-                score--;
-                tvScore.setText("Score: " + score);
+                if (numRight > 0) {
+                    numRight--;
+                }
                 v.vibrate(150);
             } else {
-                score++;
-                tvScore.setText("Score: " + score);
+                numRight++;
             }
             animationSet.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -260,8 +251,7 @@ public class GameActivity extends AppCompatActivity {
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
-            score++;
-            tvScore.setText("Score: " + score);
+            numRight++;
         } else {
             v.vibrate(150);
         }
@@ -292,8 +282,7 @@ public class GameActivity extends AppCompatActivity {
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         if (gifSet.get(0).tags.get(0).equals(tvCat3.getText())) {
-            score++;
-            tvScore.setText("Score: " + score);
+            numRight++;
         } else {
             v.vibrate(150);
         }
@@ -326,8 +315,7 @@ public class GameActivity extends AppCompatActivity {
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeTop: ");
         if (gifSet.get(0).tags.get(0).equals(tvCat1.getText())) {
-            score++;
-            tvScore.setText("Score: " + score);
+            numRight++;
         } else {
             v.vibrate(150);
         }
@@ -358,8 +346,7 @@ public class GameActivity extends AppCompatActivity {
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         if (gifSet.get(0).tags.get(0).equals(tvCat4.getText())) {
-            score++;
-            tvScore.setText("Score: " + score);
+            numRight++;
         } else {
             v.vibrate(150);
         }
@@ -465,16 +452,16 @@ public class GameActivity extends AppCompatActivity {
             long tDelta = tEnd - startTime;
             double elapsedSeconds = tDelta / 1000.0;
             //TODO: handle game over somehow
-            if (elapsedSeconds < prefs.getLong("High Score", (long) 1000000000)) {
-                editor.putLong("High Score", (long) elapsedSeconds);
+
+            long score = (long) Double.parseDouble(tvScore.getText().toString().substring(7));
+
+            if (score > prefs.getLong("High Score", (long) 0)) {
+                editor.putLong("High Score", (long) score);
                 editor.commit();
             }
-            long highscore = prefs.getLong("High Score", (long) -1.0);
-            if (highscore >= 0) {
-                tvHSNumber.setText("" + highscore);
-            } else {
-                tvHSNumber.setText("?");
-            }
+            long highscore = prefs.getLong("High Score", (long) 0);
+            tvHSNumber.setText("" + highscore);
+
             ivGif.setVisibility(View.INVISIBLE);
             cvGif.setVisibility(View.INVISIBLE);
             tvHighScore.setVisibility(View.VISIBLE);
