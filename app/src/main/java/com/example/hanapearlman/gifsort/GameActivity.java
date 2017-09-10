@@ -218,11 +218,15 @@ public class GameActivity extends AppCompatActivity {
             animationSet.addAnimation(rotateAnim);
             animationSet.setFillAfter(false);
             cvGif.startAnimation(animationSet);
-            if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
+            String category = gifSet.get(0).tags.get(0);
+            if (category.equals(tvCat2.getText()) || category.equals(tvCat1.getText())
+            || category.equals(tvCat3.getText()) || category.equals(tvCat4.getText())) {
+                score--;
+                tvScore.setText("Score: " + score);
+                v.vibrate(150);
+            } else {
                 score++;
                 tvScore.setText("Score: " + score);
-            } else {
-                v.vibrate(150);
             }
             animationSet.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -451,7 +455,7 @@ public class GameActivity extends AppCompatActivity {
 
     public void showNextGif() {
         gifSet.remove(0);
-        if (gifSet.size() == 0 || score == 5) {
+        if (gifSet.size() == 0) {
             timerHandler.removeCallbacks(timerRunnable);
             long tEnd = System.currentTimeMillis();
             long tDelta = tEnd - startTime;
