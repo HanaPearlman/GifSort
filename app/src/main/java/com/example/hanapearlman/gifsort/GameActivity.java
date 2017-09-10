@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -66,6 +67,7 @@ public class GameActivity extends AppCompatActivity {
     TextView tvScore;
     int score;
     Context context;
+    Vibrator v;
 
     TextView timerTextView;
     long startTime = 0;
@@ -89,6 +91,7 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         context = this;
@@ -196,13 +199,13 @@ public class GameActivity extends AppCompatActivity {
             animationSet.addAnimation(shrinkAnim);
             animationSet.addAnimation(rotateAnim);
             animationSet.setFillAfter(false);
-
             cvGif.startAnimation(animationSet);
             if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
                 score++;
                 tvScore.setText("Score: " + score);
+            } else {
+                v.vibrate(150);
             }
-            Log.d(DEBUG_TAG, "onSwipeRight: ");
             animationSet.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -234,6 +237,8 @@ public class GameActivity extends AppCompatActivity {
         if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
             score++;
             tvScore.setText("Score: " + score);
+        } else {
+            v.vibrate(150);
         }
         Log.d(DEBUG_TAG, "onSwipeRight: ");
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -264,6 +269,8 @@ public class GameActivity extends AppCompatActivity {
         if (gifSet.get(0).tags.get(0).equals(tvCat3.getText())) {
             score++;
             tvScore.setText("Score: " + score);
+        } else {
+            v.vibrate(150);
         }
         Log.d(DEBUG_TAG, "onSwipeLeft: ");
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -295,6 +302,8 @@ public class GameActivity extends AppCompatActivity {
         if (gifSet.get(0).tags.get(0).equals(tvCat1.getText())) {
             score++;
             tvScore.setText("Score: " + score);
+        } else {
+            v.vibrate(150);
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -324,6 +333,8 @@ public class GameActivity extends AppCompatActivity {
         if (gifSet.get(0).tags.get(0).equals(tvCat4.getText())) {
             score++;
             tvScore.setText("Score: " + score);
+        } else {
+            v.vibrate(150);
         }
         Log.d(DEBUG_TAG, "onSwipeDown: ");
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -377,7 +388,8 @@ public class GameActivity extends AppCompatActivity {
                                     Glide.with(context)
                                             .load(gifSet.get(0).getUrl())
                                             .asGif()
-                                            .override(gifSet.get(0).width, gifSet.get(0).height)
+                                            .override(200, 400)
+                                            .centerCrop()
                                             .into(ivGif);
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
                                 }
