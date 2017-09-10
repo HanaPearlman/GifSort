@@ -1,6 +1,7 @@
 package com.example.hanapearlman.gifsort;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -64,8 +65,12 @@ public class GameActivity extends AppCompatActivity {
     TextView tvCat3;
     TextView tvCat4;
     TextView tvScore;
-    int score;
+    TextView tvHighScore;
+    long score;
     Context context;
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
 
     TextView timerTextView;
     long startTime = 0;
@@ -101,6 +106,7 @@ public class GameActivity extends AppCompatActivity {
 
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
+        tvHighScore = (TextView) findViewById(R.id.tvHighScore);
         score = 0;
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
@@ -113,6 +119,10 @@ public class GameActivity extends AppCompatActivity {
         timerTextView = (TextView) findViewById(R.id.tvTime);
         tvScore = (TextView) findViewById(R.id.tvScore);
         tvScore.setText("Score: " + score);
+
+        prefs = this.getSharedPreferences("GifSort", Context.MODE_PRIVATE);
+        editor = prefs.edit();
+        editor.commit();
         startTime = System.currentTimeMillis();
         timerHandler.postDelayed(timerRunnable, 0);
     }
@@ -424,6 +434,18 @@ public class GameActivity extends AppCompatActivity {
             long tDelta = tEnd - startTime;
             double elapsedSeconds = tDelta / 1000.0;
             //TODO: handle game over somehow
+            if (elapsedSeconds < prefs.getLong("High Score", (long) 1000000000)) {
+                editor.putLong("High Score", (long) elapsedSeconds);
+                editor.commit();
+            }
+            long highscore = prefs.getLong("High Score", (long) -1.0);
+            if (highscore >= 0) {
+                tvHighScore.setText("HIGH SCORE\n" + highscore);
+            } else {
+                tvHighScore.setText("HIGH SCORE\n" + "???");
+            }
+            ivGif.setVisibility(View.INVISIBLE);
+            tvHighScore.setVisibility(View.VISIBLE);
         } else {
             Glide.with(this)
                     .load(gifSet.get(0).getUrl())
