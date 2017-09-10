@@ -318,21 +318,22 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         populateCategoryNames();
-        Collections.shuffle(gifSet);
     }
 
     public void getGiphysFromCategory(final String category) {
-        for (int i = 0; i < 7; i++) {
-            client.getRandomGiphyWithTag(category, new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            super.onSuccess(statusCode, headers, response);
-                            //parse the JSON
-                            try {
-                                JSONObject data = response.getJSONObject("data");
-                                gifSet.add(new Gif(data.getString("image_original_url"),
-                                        Arrays.asList(category), data.getInt("image_width"),
-                                        data.getInt("image_height")));
+        client.getSearchGiphyWithTag(category, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        //super.onSuccess(statusCode, headers, response);
+                        //parse the JSON
+                        try {
+                            JSONArray data = response.getJSONArray("data");
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject obj = data.getJSONObject(i);
+                                JSONObject imgSpecs = obj.getJSONObject("images").getJSONObject("original");
+                                gifSet.add(new Gif(imgSpecs.getString("url"),
+                                        Arrays.asList(category), imgSpecs.getInt("width"),
+                                        imgSpecs.getInt("height")));
                                 if (gifSet.size() == 1) {
                                     Glide.with(context)
                                             .load(gifSet.get(0).getUrl())
@@ -341,19 +342,24 @@ public class GameActivity extends AppCompatActivity {
                                             .into(ivGif);
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            super.onFailure(statusCode, headers, responseString, throwable);
-                            Log.e("GameActivity", "Failure");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
-            );
-        }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.e("GameActivity", "Failure");
+            }
+        });
+
     }
 
     public void populateCategoryNames() {
@@ -369,6 +375,9 @@ public class GameActivity extends AppCompatActivity {
 
     public void showNextGif() {
         gifSet.remove(0);
+        if (gifSet.size() == 27) {
+            Collections.shuffle(gifSet);
+        }
         if (gifSet.size() == 0) {
             timerHandler.removeCallbacks(timerRunnable);
             long tEnd = System.currentTimeMillis();
