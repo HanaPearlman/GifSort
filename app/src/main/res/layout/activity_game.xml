@@ -140,4 +140,16 @@
         android:textSize="300px"
         android:visibility="invisible" />
 
+    <ImageView
+        android:id="@+id/ivPlayAgain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/preloader"
+        android:layout_margin="8dp"
+        app:srcCompat="@android:drawable/ic_menu_revert"
+        android:visibility="invisible"
+        android:onClick="playAgain"/>
+
 </RelativeLayout>
