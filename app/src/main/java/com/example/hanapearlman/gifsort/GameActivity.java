@@ -62,6 +62,7 @@ public class GameActivity extends AppCompatActivity {
     Vibrator v;
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
+    boolean instructions = true;
 
     TextView timerTextView;
     long startTime = 0;
@@ -212,15 +213,20 @@ public class GameActivity extends AppCompatActivity {
             animationSet.addAnimation(rotateAnim);
             animationSet.setFillAfter(false);
             cvGif.startAnimation(animationSet);
-            String category = gifSet.get(0).tags.get(0);
-            if (category.equals(tvCat2.getText()) || category.equals(tvCat1.getText())
-            || category.equals(tvCat3.getText()) || category.equals(tvCat4.getText())) {
-                if (numRight > 0) {
-                    numRight--;
+
+            if (!instructions) {
+                String category = gifSet.get(0).tags.get(0);
+                if (category.equals(tvCat2.getText()) || category.equals(tvCat1.getText())
+                        || category.equals(tvCat3.getText()) || category.equals(tvCat4.getText())) {
+                    if (numRight > 0) {
+                        numRight--;
+                    }
+                    v.vibrate(150);
+                } else {
+                    numRight++;
                 }
-                v.vibrate(150);
             } else {
-                numRight++;
+                instructions = false;
             }
             animationSet.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -245,15 +251,20 @@ public class GameActivity extends AppCompatActivity {
 
     public void onSwipeRight() {
         //TODO: accelerate card right
-        Animation animation = new TranslateAnimation(0, 900, 0, 0);
-        animation.setDuration(320);
+        Animation animation = new TranslateAnimation(0, 1500, 0, 0);
+        animation.setDuration(350);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
-        if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
-            numRight++;
+
+        if (!instructions) {
+            if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
+                numRight++;
+            } else {
+                v.vibrate(150);
+            }
         } else {
-            v.vibrate(150);
+            instructions = false;
         }
         Log.d(DEBUG_TAG, "onSwipeRight: ");
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -276,15 +287,21 @@ public class GameActivity extends AppCompatActivity {
 
     public void onSwipeLeft() {
         //TODO: accelerate card left
-        Animation animation = new TranslateAnimation(0, -900, 0, 0);
-        animation.setDuration(320);
+        Animation animation = new TranslateAnimation(0, -1500, 0, 0);
+        animation.setDuration(350);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
-        if (gifSet.get(0).tags.get(0).equals(tvCat3.getText())) {
-            numRight++;
+
+        if (!instructions) {
+            if (gifSet.get(0).tags.get(0).equals(tvCat3.getText())) {
+                numRight++;
+            } else {
+                v.vibrate(150);
+            }
+
         } else {
-            v.vibrate(150);
+            instructions = false;
         }
         Log.d(DEBUG_TAG, "onSwipeLeft: ");
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -307,17 +324,21 @@ public class GameActivity extends AppCompatActivity {
 
     public void onSwipeTop() {
         //TODO: accelerate card top
-        Animation animation = new TranslateAnimation(0, 0, 0, -1500);
-        animation.setDuration(350);
+        Animation animation = new TranslateAnimation(0, 0, 0, -900);
+        animation.setDuration(320);
         animation.setFillAfter(false);
-        //loadNext();
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeTop: ");
-        if (gifSet.get(0).tags.get(0).equals(tvCat1.getText())) {
-            numRight++;
+
+        if (!instructions) {
+            if (gifSet.get(0).tags.get(0).equals(tvCat1.getText())) {
+                numRight++;
+            } else {
+                v.vibrate(150);
+            }
         } else {
-            v.vibrate(150);
+            instructions = false;
         }
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -340,15 +361,20 @@ public class GameActivity extends AppCompatActivity {
 
     public void onSwipeBottom() {
         //TODO: accelerate card bottom
-        Animation animation = new TranslateAnimation(0, 0, 0, 1500);
-        animation.setDuration(350);
+        Animation animation = new TranslateAnimation(0, 0, 0, 900);
+        animation.setDuration(320);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
-        if (gifSet.get(0).tags.get(0).equals(tvCat4.getText())) {
-            numRight++;
+
+        if (!instructions) {
+            if (gifSet.get(0).tags.get(0).equals(tvCat4.getText())) {
+                numRight++;
+            } else {
+                v.vibrate(150);
+            }
         } else {
-            v.vibrate(150);
+            instructions = false;
         }
         Log.d(DEBUG_TAG, "onSwipeDown: ");
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -409,9 +435,9 @@ public class GameActivity extends AppCompatActivity {
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
                                 }*/
 
+
                                 if (gifSet.size() == 20) {
-                                    Collections.shuffle(gifSet);
-                                    loadNext();
+                                    addRandomGiphys();
                                 }
                             }
                         } catch (JSONException e) {
@@ -511,5 +537,38 @@ public class GameActivity extends AppCompatActivity {
     public void playAgain(View view) {
         Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
+    }
+
+    public void addRandomGiphys() {
+        for (int i = 0; i < 3; i++) {
+            client.getRandomGiphy(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    //super.onSuccess(statusCode, headers, response);
+                    //parse the JSON
+                    try {
+                        JSONObject data = response.getJSONObject("data");
+                        Log.i("JSON DATA", data.toString());
+                        gifSet.add(new Gif(data.getString("image_original_url"),
+                                Arrays.asList("Random"), data.getInt("image_width"),
+                                data.getInt("image_height")));
+
+                        if (gifSet.size() > 22) {
+                            Collections.shuffle(gifSet);
+                            loadNext();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.e("GameActivity", "Failure");
+                }
+            });
+        }
     }
 }
