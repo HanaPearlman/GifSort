@@ -55,6 +55,8 @@ public class GameActivity extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
     private static final String DEBUG_TAG = "Gestures";
     CardView cvGif;
+    CardView cvHiddenGif;
+    ImageView ivHiddenGif;
     GiphyClient client;
     private HashMap<String, String[]> categories = new HashMap<String, String[]>();
     List<String> fourCats;
@@ -107,6 +109,8 @@ public class GameActivity extends AppCompatActivity {
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
         tvHighScore = (TextView) findViewById(R.id.tvHighScore);
+        cvHiddenGif = (CardView) findViewById(R.id.cvHiddenLoadingCard);
+        ivHiddenGif = (ImageView) findViewById(R.id.ivHiddenGif);
         score = 0;
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
@@ -237,7 +241,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeRight() {
         //TODO: accelerate card right
         Animation animation = new TranslateAnimation(0, 900, 0, 0);
-        animation.setDuration(200);
+        animation.setDuration(320);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -249,7 +253,7 @@ public class GameActivity extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                //do nothing
+                loadNext();
             }
 
             @Override
@@ -267,7 +271,7 @@ public class GameActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         //TODO: accelerate card left
         Animation animation = new TranslateAnimation(0, -900, 0, 0);
-        animation.setDuration(200);
+        animation.setDuration(320);
         animation.setFillAfter(false);
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
@@ -279,7 +283,7 @@ public class GameActivity extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                //do nothing
+                loadNext();
             }
 
             @Override
@@ -299,6 +303,7 @@ public class GameActivity extends AppCompatActivity {
         Animation animation = new TranslateAnimation(0, 0, 0, -1500);
         animation.setDuration(350);
         animation.setFillAfter(false);
+        //loadNext();
         //llTransportOptions.startAnimation(animation);
         cvGif.startAnimation(animation);
         Log.d(DEBUG_TAG, "onSwipeTop: ");
@@ -310,6 +315,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onAnimationStart(Animation animation) {
                 //do nothing
+                loadNext();
             }
 
             @Override
@@ -339,7 +345,7 @@ public class GameActivity extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                //do nothing
+                loadNext();
             }
 
             @Override
@@ -392,6 +398,10 @@ public class GameActivity extends AppCompatActivity {
                                             .into(ivGif);
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
                                 }
+
+                                if (gifSet.size() == 20) {
+                                    Collections.shuffle(gifSet);
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -425,9 +435,6 @@ public class GameActivity extends AppCompatActivity {
 
     public void showNextGif() {
         gifSet.remove(0);
-        if (gifSet.size() == 27) {
-            Collections.shuffle(gifSet);
-        }
         if (gifSet.size() == 0) {
             timerHandler.removeCallbacks(timerRunnable);
             long tEnd = System.currentTimeMillis();
@@ -453,6 +460,18 @@ public class GameActivity extends AppCompatActivity {
                     .override(gifSet.get(0).width, gifSet.get(0).height)
                     .into(ivGif);
             Log.i("NEWGIF", gifSet.get(0).getUrl());
+        }
+    }
+
+    public void loadNext() {
+        if (gifSet.size() > 1) {
+            Glide.with(this)
+                    .load(gifSet.get(1).getUrl())
+                    .asGif()
+                    .override(gifSet.get(1).width, gifSet.get(1).height)
+                    .into(ivHiddenGif);
+        } else {
+            //do nothing, no more cards
         }
     }
 }
