@@ -7,6 +7,20 @@
     android:layout_height="match_parent"
     tools:context="com.example.hanapearlman.gifsort.MainActivity">
 
+    <ImageView
+        android:id="@+id/background_one"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:src="@drawable/collage2"/>
+
+    <ImageView
+        android:id="@+id/background_two"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:src="@drawable/collage2"/>
+
     <Button
         android:id="@+id/btStart"
         android:layout_width="wrap_content"
