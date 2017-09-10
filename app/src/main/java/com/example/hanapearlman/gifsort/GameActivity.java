@@ -142,20 +142,19 @@ public class GameActivity extends AppCompatActivity {
         categories.put("Animals", new String[]{"cats", "dogs", "walrus",
                 "birds", "fish", "panda", "bunnies", "penguin", "horse", "pig",
                 "owl", "duck", "butterfly", "fox", "sloth", "giraffe"});
-        categories.put("Motion", new String[]{"bounce", "jump", "run",
+        categories.put("Motion", new String[]{"jump", "run",
                         "sleep", "dance", "swim", "drink"});
         categories.put("Entertainment", new String[]{"disney", "glee",
                         "simpsons", "sponge bob", "hamilton", "anime"});
-        categories.put("Emotions", new String[]{"cry", "smile", "happy",
-                        "sad", "angry", "no", "yas", "heart"});
-        categories.put("Nature", new String[]{"rain", "snow", "sun", "wind", "water",
+        categories.put("Emotions", new String[]{"sad", "angry", "yas", "heart"});
+        categories.put("Nature", new String[]{"rain", "snow", "sun", "wind",
                         "tornado", "fire", "flower", "sea", "space", "globe"});
         categories.put("Cute", new String[]{"babies", "dogs", "cats",
-                        "bunnies", "boop", "love"});
+                        "bunnies", "love"});
         categories.put("Misc", new String[]{"hand", "kids", "math", "school",
                         "money", "clock", "beach", "workout", "ballet", "memes", "fireworks"});
         categories.put("Food", new String[]{"fries", "burgers", "ice cream",
-                        "cake", "pizza", "cookie", "chocolate", "candy"});
+                        "cake", "pizza", "cookie", "chocolate"});
         categories.put("Sports", new String[]{"soccer", "basketball",
                         "football", "frisbee", "golf", "baseball"});
         categories.put("People", new String[]{"obama", "trump", "hillary",
@@ -405,7 +404,7 @@ public class GameActivity extends AppCompatActivity {
                                 gifSet.add(new Gif(imgSpecs.getString("url"),
                                         Arrays.asList(category), imgSpecs.getInt("width"),
                                         imgSpecs.getInt("height")));
-                                if (gifSet.size() == 1) {
+                                /*if (gifSet.size() == 1) {
                                     Glide.with(context)
                                             .load(gifSet.get(0).getUrl())
                                             .asGif()
@@ -413,10 +412,11 @@ public class GameActivity extends AppCompatActivity {
                                             .centerCrop()
                                             .into(ivGif);
                                     Log.i("NEWGIF", gifSet.get(0).getUrl());
-                                }
+                                }*/
 
                                 if (gifSet.size() == 20) {
                                     Collections.shuffle(gifSet);
+                                    loadNext();
                                 }
                             }
                         } catch (JSONException e) {
