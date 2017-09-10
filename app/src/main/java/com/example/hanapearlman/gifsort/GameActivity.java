@@ -1,7 +1,9 @@
 package com.example.hanapearlman.gifsort;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -112,6 +114,8 @@ public class GameActivity extends AppCompatActivity {
         String category = getCategoryFromRandomNumber(catNumber);
         populateGifList(category);
 
+        ImageView ivPlayAgain = (ImageView) findViewById(R.id.ivPlayAgain);
+        ivPlayAgain.setVisibility(View.INVISIBLE);
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
         tvHighScore = (TextView) findViewById(R.id.tvHighScore);
@@ -475,6 +479,8 @@ public class GameActivity extends AppCompatActivity {
             cvGif.setVisibility(View.INVISIBLE);
             tvHighScore.setVisibility(View.VISIBLE);
             tvHSNumber.setVisibility(View.VISIBLE);
+            ImageView ivPlayAgain = (ImageView) findViewById(R.id.ivPlayAgain);
+            ivPlayAgain.setVisibility(View.VISIBLE);
         } else {
             Glide.with(this)
                     .load(gifSet.get(0).getUrl())
@@ -513,5 +519,10 @@ public class GameActivity extends AppCompatActivity {
             case 12: return "Colors";
             default: return "Trippy";
         }
+    }
+
+    public void playAgain(View view) {
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
     }
 }
