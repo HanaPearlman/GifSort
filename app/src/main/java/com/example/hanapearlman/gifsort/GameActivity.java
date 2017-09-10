@@ -104,7 +104,10 @@ public class GameActivity extends AppCompatActivity {
         fourCats = new ArrayList<>();
         //TODO: change this later
         fillCategories();
-        populateGifList("Animals");
+
+        int catNumber = (int) (Math.random()*13) + 1;
+        String category = getCategoryFromRandomNumber(catNumber);
+        populateGifList(category);
 
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
@@ -472,6 +475,24 @@ public class GameActivity extends AppCompatActivity {
                     .into(ivHiddenGif);
         } else {
             //do nothing, no more cards
+        }
+    }
+
+    public String getCategoryFromRandomNumber(int categoryNumber) {
+        switch (categoryNumber){
+            case 1 : return "Animals";
+            case 2: return "Motion";
+            case 3: return "Entertainment";
+            case 4: return "Emotions";
+            case 5: return "Nature";
+            case 6: return "Cute";
+            case 7: return "Misc";
+            case 8: return "Food";
+            case 9: return "Sport";
+            case 10: return "People";
+            case 11: return "KPop";
+            case 12: return "Colors";
+            default: return "Trippy";
         }
     }
 }
