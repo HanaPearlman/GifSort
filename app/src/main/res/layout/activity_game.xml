@@ -104,10 +104,21 @@
         android:id="@+id/tvHighScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/cvGif"
+        android:layout_above="@+id/cvGif"
         android:layout_centerHorizontal="true"
         android:text="High Score"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/tvHSNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvHighScore"
+        android:layout_centerHorizontal="true"
+        android:text="High Score"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="300px"
         android:visibility="invisible" />
 
 </RelativeLayout>

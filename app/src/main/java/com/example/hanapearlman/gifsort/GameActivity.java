@@ -66,6 +66,7 @@ public class GameActivity extends AppCompatActivity {
     TextView tvCat4;
     TextView tvScore;
     TextView tvHighScore;
+    TextView tvHSNumber;
     long score;
     Context context;
     SharedPreferences prefs;
@@ -107,6 +108,7 @@ public class GameActivity extends AppCompatActivity {
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
         tvHighScore = (TextView) findViewById(R.id.tvHighScore);
+        tvHSNumber = (TextView) findViewById(R.id.tvHSNumber);
         score = 0;
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
@@ -419,7 +421,7 @@ public class GameActivity extends AppCompatActivity {
 
     public void showNextGif() {
         gifSet.remove(0);
-        if (gifSet.size() == 0) {
+        if (gifSet.size() == 0 || score == 5) {
             timerHandler.removeCallbacks(timerRunnable);
             long tEnd = System.currentTimeMillis();
             long tDelta = tEnd - startTime;
@@ -431,12 +433,14 @@ public class GameActivity extends AppCompatActivity {
             }
             long highscore = prefs.getLong("High Score", (long) -1.0);
             if (highscore >= 0) {
-                tvHighScore.setText("HIGH SCORE\n" + highscore);
+                tvHSNumber.setText("" + highscore);
             } else {
-                tvHighScore.setText("HIGH SCORE\n" + "???");
+                tvHSNumber.setText("?");
             }
             ivGif.setVisibility(View.INVISIBLE);
+            cvGif.setVisibility(View.INVISIBLE);
             tvHighScore.setVisibility(View.VISIBLE);
+            tvHSNumber.setVisibility(View.VISIBLE);
         } else {
             Glide.with(this)
                     .load(gifSet.get(0).getUrl())
