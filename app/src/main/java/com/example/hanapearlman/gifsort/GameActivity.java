@@ -1,6 +1,7 @@
 package com.example.hanapearlman.gifsort;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -59,8 +60,11 @@ public class GameActivity extends AppCompatActivity {
     TextView tvCat3;
     TextView tvCat4;
     TextView tvScore;
-    int score;
+    long score;
     Context context;
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,10 @@ public class GameActivity extends AppCompatActivity {
         });
         tvScore = (TextView) findViewById(R.id.tvScore);
         tvScore.setText("Score: " + score);
+
+        prefs = this.getSharedPreferences("GifSort", Context.MODE_PRIVATE);
+        editor = prefs.edit();
+        editor.commit();
     }
 
     private void fillCategories() {
@@ -354,5 +362,16 @@ public class GameActivity extends AppCompatActivity {
                 .override(gifSet.get(0).width, gifSet.get(0).height)
                 .into(ivGif);
         Log.i("NEWGIF", gifSet.get(0).getUrl());
+    }
+
+    public void gameOver() {
+        //whether high score changes
+        if (score <= prefs.getLong("High Score", (long) -1.0)) {
+            editor.putLong("High Score", score);
+            editor.commit();
+        }
+
+        //get high score
+        long highscore = prefs.getLong("High Score", (long) -1.0);
     }
 }
