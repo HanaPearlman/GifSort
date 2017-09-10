@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,11 +62,32 @@ public class GameActivity extends AppCompatActivity {
     TextView tvCat3;
     TextView tvCat4;
     TextView tvScore;
+    TextView tvHighScore;
     long score;
     Context context;
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
 
+
+    TextView timerTextView;
+    long startTime = 0;
+
+    //runs without a timer by reposting this handler at the end of the runnable
+    Handler timerHandler = new Handler();
+    Runnable timerRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            long millis = System.currentTimeMillis() - startTime;
+            int seconds = (int) (millis / 1000);
+            int minutes = seconds / 60;
+            seconds = seconds % 60;
+
+            timerTextView.setText(String.format("%d:%02d", minutes, seconds));
+
+            timerHandler.postDelayed(this, 500);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,12 +103,8 @@ public class GameActivity extends AppCompatActivity {
 
         cvGif = (CardView) findViewById(R.id.cvGif);
         ivGif = (ImageView) findViewById(R.id.ivGif);
+        tvHighScore = (TextView) findViewById(R.id.tvHighScore);
         score = 0;
-
-//        Glide.with(this)
-//                .load("https://media.giphy.com/media/RTvv8ST7rYUec/giphy.gif")
-//                .asGif()
-//                .into(ivGif);
 
         cvGif.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -94,12 +113,15 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
+        timerTextView = (TextView) findViewById(R.id.tvTime);
         tvScore = (TextView) findViewById(R.id.tvScore);
         tvScore.setText("Score: " + score);
 
         prefs = this.getSharedPreferences("GifSort", Context.MODE_PRIVATE);
         editor = prefs.edit();
         editor.commit();
+        startTime = System.currentTimeMillis();
+        timerHandler.postDelayed(timerRunnable, 0);
     }
 
     private void fillCategories() {
@@ -306,6 +328,7 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         populateCategoryNames();
+        Collections.shuffle(gifSet);
     }
 
     public void getGiphysFromCategory(final String category) {
@@ -356,22 +379,31 @@ public class GameActivity extends AppCompatActivity {
 
     public void showNextGif() {
         gifSet.remove(0);
-        Glide.with(this)
-                .load(gifSet.get(0).getUrl())
-                .asGif()
-                .override(gifSet.get(0).width, gifSet.get(0).height)
-                .into(ivGif);
-        Log.i("NEWGIF", gifSet.get(0).getUrl());
-    }
-
-    public void gameOver() {
-        //whether high score changes
-        if (score <= prefs.getLong("High Score", (long) -1.0)) {
-            editor.putLong("High Score", score);
-            editor.commit();
+        if (gifSet.size() == 0) {
+            timerHandler.removeCallbacks(timerRunnable);
+            long tEnd = System.currentTimeMillis();
+            long tDelta = tEnd - startTime;
+            double elapsedSeconds = tDelta / 1000.0;
+            //TODO: handle game over somehow
+            if (elapsedSeconds < prefs.getLong("High Score", (long) 1000000000)) {
+                editor.putLong("High Score", (long) elapsedSeconds);
+                editor.commit();
+            }
+            long highscore = prefs.getLong("High Score", (long) -1.0);
+            if (highscore >= 0) {
+                tvHighScore.setText("HIGH SCORE\n" + highscore);
+            } else {
+                tvHighScore.setText("HIGH SCORE\n" + "???");
+            }
+            ivGif.setVisibility(View.INVISIBLE);
+            tvHighScore.setVisibility(View.VISIBLE);
+        } else {
+            Glide.with(this)
+                    .load(gifSet.get(0).getUrl())
+                    .asGif()
+                    .override(gifSet.get(0).width, gifSet.get(0).height)
+                    .into(ivGif);
+            Log.i("NEWGIF", gifSet.get(0).getUrl());
         }
-
-        //get high score
-        long highscore = prefs.getLong("High Score", (long) -1.0);
     }
 }
