@@ -9,15 +9,17 @@
 
     <ImageView
         android:id="@+id/background_one"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="fitXY"
         android:adjustViewBounds="true"
         android:src="@drawable/collage2"/>
 
     <ImageView
         android:id="@+id/background_two"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="fitXY"
         android:adjustViewBounds="true"
         android:src="@drawable/collage2"/>
 
