@@ -14,6 +14,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -189,7 +192,44 @@ public class GameActivity extends AppCompatActivity {
 
         @Override
         public boolean onDoubleTap(MotionEvent event) {
-            Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
+            //TODO: shrink and spin card till it disappear
+
+            AnimationSet animationSet = new AnimationSet(true);
+
+            Animation shrinkAnim = new ScaleAnimation(1, 0, 1, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            shrinkAnim.setDuration(400);
+
+            Animation rotateAnim = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            rotateAnim.setDuration(400);
+
+
+            animationSet.addAnimation(shrinkAnim);
+            animationSet.addAnimation(rotateAnim);
+            animationSet.setFillAfter(false);
+
+            cvGif.startAnimation(animationSet);
+            if (gifSet.get(0).tags.get(0).equals(tvCat2.getText())) {
+                score++;
+                tvScore.setText("Score: " + score);
+            }
+            Log.d(DEBUG_TAG, "onSwipeRight: ");
+            animationSet.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    //do nothing
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    showNextGif();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    //do nothing
+                }
+            });
+
             return true;
         }
     }
